@@ -31,4 +31,4 @@ Nicola Rebagliati <nicola.rebagliati@gmail.com>
 
 ### Current repository maintainer:
 
-Qbit271 <rss3@rice.edu>
+Qbit- <rss3@rice.edu>
