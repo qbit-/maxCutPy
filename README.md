@@ -24,7 +24,11 @@ See `example.py` for a usage example.
 
 Contact Us
 ==========
+### Original authors:
 Andrea Casini <andreacasini88@gmail.com>
 
 Nicola Rebagliati <nicola.rebagliati@gmail.com>
 
+### Current repository maintainer:
+
+Qbit271 <rss3@rice.edu>
