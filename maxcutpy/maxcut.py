@@ -13,15 +13,15 @@ import networkx as nx
 import numpy as np
 from scipy import integrate
 
-import graphcut as gc
+from . import graphcut as gc
 
 
 __license__ = 'GPL'
 
 
-#==============================================================================
+# ==============================================================================
 # Time out decorator
-#==============================================================================
+# ==============================================================================
 
 
 class TimedOutExc(Exception):
@@ -47,17 +47,17 @@ def timeout(timeout):
             signal.alarm(0)
             return result
 
-        new_f.func_name = f.func_name
+        new_f.__name__ = f.__name__
         return new_f
 
     return decorate
 
 
-#==============================================================================
+# ==============================================================================
 # Theoretic Approximation Functions
 #
 # Implementation of Soto's and Trevisan's approximation functions.
-#==============================================================================
+# ==============================================================================
 
 
 def f1(x, eps):
@@ -98,12 +98,12 @@ def trevisan_function(eps):
     return 1.0 / 2.0
 
 
-#===============================================================================
+# ===============================================================================
 # Greedy Cut
 #
 # Approximation ratio: 0.5
 # Complexity: O(n^2)
-#===============================================================================
+# ===============================================================================
 
 
 def greedy_choice(G, candidate, blue_nodes, black_nodes, visited):
@@ -132,7 +132,7 @@ def greedy_cut(G, nbunch=None, visited=None):
 
     """
     if nbunch == None:
-        nbunch = G.nodes()  # set of nbunch
+        nbunch = list(G.nodes())  # set of nbunch
 
     if visited is None:
         visited = set()
@@ -158,12 +158,12 @@ def greedy_cut(G, nbunch=None, visited=None):
     return blue_nodes, black_nodes
 
 
-#==============================================================================
+# ==============================================================================
 # 2TSC Approximation Algorithm by Luca Trevisan
 #
 # Approximation ratio: 0.531
 # Complexity: O(n^2)
-#==============================================================================
+# ==============================================================================
 
 
 def first_lemma(G, y):
@@ -200,7 +200,7 @@ def largest_eigenvector(G):
     """Return the largest eigenvector of a graph G."""
     L = nx.normalized_laplacian_matrix(G)
 
-    eigenvalues, eigenvectors = np.linalg.eig(L)
+    eigenvalues, eigenvectors = np.linalg.eig(L.todense())
 
     # highest eigenvalue index and ...
     ind = np.argmax(eigenvalues)
@@ -293,8 +293,8 @@ def recursive_spectral_cut(G):
 
         V1, V2 = recursive_spectral_cut(G1)
 
-        if (gc.edges_beetween(G, V1 | L, V2 | R) > 
-            gc.edges_beetween(G, V1 | R, V2 | L)):
+        if (gc.edges_beetween(G, V1 | L, V2 | R) >
+                gc.edges_beetween(G, V1 | R, V2 | L)):
             return V1 | L, V2 | R
         return V1 | R, V2 | L
 
@@ -307,11 +307,11 @@ def trevisan_approximation_alg(G):
     return gc.cut_edges(G)
 
 
-#==============================================================================
+# ==============================================================================
 # Enumerative Methods for Maximum Cut's Exact Solutions by Andrea Casini
 #
 # Complexity: O(2^n)
-#==============================================================================
+# ==============================================================================
 
 
 def brute_force_max_cut(G):
@@ -336,9 +336,9 @@ def brute_force_max_cut(G):
     return gc.partition_dictionary(G), max_cut_value
 
 
-#===============================================================================
+# ===============================================================================
 # Fast Max Cut
-#===============================================================================
+# ===============================================================================
 
 
 def choose_new_candidate(partition_dict, nodes_stack):
@@ -381,18 +381,18 @@ def aux_local_consistent_max_cut(G,
     candidate = choose_new_candidate(partition_dict, degree_node_seq)
 
     blue_cut, blue_cut_val = aux_local_consistent_max_cut(
-                                                  G,
-                                                  dict(partition_dict),
-                                                  list(degree_node_seq),
-                                                  candidate,
-                                                  gc.BLUE)
+        G,
+        dict(partition_dict),
+        list(degree_node_seq),
+        candidate,
+        gc.BLUE)
 
     black_cut, black_cut_val = aux_local_consistent_max_cut(
-                                                     G,
-                                                     dict(partition_dict),
-                                                     list(degree_node_seq),
-                                                     candidate,
-                                                     gc.BLACK)
+        G,
+        dict(partition_dict),
+        list(degree_node_seq),
+        candidate,
+        gc.BLACK)
 
     if blue_cut is None and black_cut is None:
         return None, 0
@@ -427,18 +427,18 @@ def aux_pruning_local_consistent_max_cut(G,
     candidate = choose_new_candidate(partition_dict, degree_node_seq)
 
     blue_cut, blue_cut_val = aux_pruning_local_consistent_max_cut(
-                                                          G,
-                                                          dict(partition_dict),
-                                                          list(degree_node_seq),
-                                                          candidate,
-                                                          gc.BLUE)
+        G,
+        dict(partition_dict),
+        list(degree_node_seq),
+        candidate,
+        gc.BLUE)
 
     black_cut, black_cut_val = aux_pruning_local_consistent_max_cut(
-                                                            G,
-                                                            dict(partition_dict),
-                                                            list(degree_node_seq),
-                                                            candidate,
-                                                            gc.BLACK)
+        G,
+        dict(partition_dict),
+        list(degree_node_seq),
+        candidate,
+        gc.BLACK)
 
     if blue_cut is None and black_cut is None:
         return None, 0
@@ -461,26 +461,26 @@ def local_consistent_max_cut(G, lowest=False, pruning=False):
 
     if not pruning:
         max_cut_dict, max_cut_value = aux_local_consistent_max_cut(
-                                                            G,
-                                                            partition_dict,
-                                                            deg_node_seq,
-                                                            candidate,
-                                                            gc.BLUE)
+            G,
+            partition_dict,
+            deg_node_seq,
+            candidate,
+            gc.BLUE)
     else:
         max_cut_dict, max_cut_value = aux_pruning_local_consistent_max_cut(
-                                                                   G,
-                                                                   partition_dict,
-                                                                   deg_node_seq,
-                                                                   candidate,
-                                                                   gc.BLUE)
+            G,
+            partition_dict,
+            deg_node_seq,
+            candidate,
+            gc.BLUE)
 
     gc.cut(G, max_cut_dict)
     return max_cut_dict, max_cut_value
 
 
-#==============================================================================
+# ==============================================================================
 # Faster Max Cut
-#==============================================================================
+# ==============================================================================
 
 
 def compute_estimated_cut(G, partition_dict, marked_nodes):
@@ -506,7 +506,7 @@ def compute_estimated_cut(G, partition_dict, marked_nodes):
         if buffer_dict[node] != gc.MARKED:
             b1k1.add(node)
 
-    nx.set_node_attributes(G, gc.PARTITION, buffer_dict)
+    nx.set_node_attributes(G, buffer_dict, gc.PARTITION)
 
     result = (G.subgraph(m).number_of_edges() +
               gc.cut_edges(G.subgraph(bk | b1k1)) -
@@ -530,7 +530,7 @@ def aux_lazy_local_consistent_max_cut(G,
     partition_dict[candidate] = partition_attribute
 
     if not nodes_stack:
-    
+
         if not gc.is_cut_consistent(G, partition_dict):
             return (None, 0)
 
@@ -547,22 +547,22 @@ def aux_lazy_local_consistent_max_cut(G,
     candidate = choose_new_candidate(partition_dict, nodes_stack)
 
     blue_cut, blue_cut_val = aux_lazy_local_consistent_max_cut(
-                                               G,
-                                               dict(partition_dict),
-                                               list(nodes_stack),
-                                               candidate,
-                                               gc.BLUE,
-                                               marked_nodes,
-                                               consistent_cuts)
+        G,
+        dict(partition_dict),
+        list(nodes_stack),
+        candidate,
+        gc.BLUE,
+        marked_nodes,
+        consistent_cuts)
 
-    black_cut, black_cut_val =  aux_lazy_local_consistent_max_cut(
-                                                   G,
-                                                   dict(partition_dict),
-                                                   list(nodes_stack),
-                                                   candidate,
-                                                   gc.BLACK,
-                                                   marked_nodes,
-                                                   consistent_cuts)
+    black_cut, black_cut_val = aux_lazy_local_consistent_max_cut(
+        G,
+        dict(partition_dict),
+        list(nodes_stack),
+        candidate,
+        gc.BLACK,
+        marked_nodes,
+        consistent_cuts)
 
     if blue_cut is None and black_cut is None:
         return None, 0
@@ -593,18 +593,18 @@ def complete_cut(G, partition_dict, nodes_stack):
 
     # Complete cut
     blue_cut, blue_cut_val = aux_local_consistent_max_cut(
-                                                  G,
-                                                  dict(partition_dict),
-                                                  list(marked_nodes_stack),
-                                                  int(candidate),
-                                                  gc.BLUE)
+        G,
+        dict(partition_dict),
+        list(marked_nodes_stack),
+        int(candidate),
+        gc.BLUE)
 
     black_cut, black_cut_val = aux_local_consistent_max_cut(
-                                                    G,
-                                                    dict(partition_dict),
-                                                    list(marked_nodes_stack),
-                                                    int(candidate),
-                                                    gc.BLACK)
+        G,
+        dict(partition_dict),
+        list(marked_nodes_stack),
+        int(candidate),
+        gc.BLACK)
 
     if blue_cut_val > black_cut_val:
         return blue_cut, blue_cut_val
@@ -623,8 +623,8 @@ def do_work(G,
     for cons_cut_dict, cons_cut_value in consistent_cuts:
 
         a_cut_dict, a_cut_value = complete_cut(G,
-                                                  cons_cut_dict,
-                                                  list(marked_deg_nodes))
+                                               cons_cut_dict,
+                                               list(marked_deg_nodes))
 
         if a_cut_value > max_cut_value:
             max_cut_value = a_cut_value
@@ -646,16 +646,16 @@ def lazy_local_consistent_max_cut(G, marked_nodes=None, strategy=0, parallel=Fal
     if marked_nodes is None:
 
         if strategy == 0:  # apparently the best
-            marked_nodes = gc.lowest_degree_nodes(G, G.number_of_nodes() / 2)
+            marked_nodes = gc.lowest_degree_nodes(G, G.number_of_nodes() // 2)
 
         elif strategy == 1:
             marked_nodes = gc.two_maximal_independent_set(G)
 
         elif strategy == 2:
-            marked_nodes = gc.pick_random_nodes(G, G.number_of_nodes()  / 2)
+            marked_nodes = gc.pick_random_nodes(G, G.number_of_nodes() // 2)
 
         elif strategy == 3:  # do not use never terminate
-            marked_nodes = gc.highest_degree_nodes(G, G.number_of_nodes() / 2)
+            marked_nodes = gc.highest_degree_nodes(G, G.number_of_nodes() // 2)
 
     # Initialize the partition dictionary: marked nodes and undecided nodes
     for i in G.nodes():
@@ -681,13 +681,13 @@ def lazy_local_consistent_max_cut(G, marked_nodes=None, strategy=0, parallel=Fal
 
     # Compute highest overestimated cut value over the unmarked nodes
     estimated_max_cut = aux_lazy_local_consistent_max_cut(
-                                          G,
-                                          dict(partition_dict),
-                                          unmarked_deg_nodes,
-                                          candidate,
-                                          gc.BLUE,
-                                          marked_nodes,
-                                          consistent_cuts)[0]
+        G,
+        dict(partition_dict),
+        unmarked_deg_nodes,
+        candidate,
+        gc.BLUE,
+        marked_nodes,
+        consistent_cuts)[0]
 
     # Compute the effective cut based on the estimated one
     max_cut_dict, effective_cut_value = complete_cut(G,
@@ -768,4 +768,3 @@ def lazy_local_consistent_max_cut(G, marked_nodes=None, strategy=0, parallel=Fal
 
     gc.cut(G, max_cut_dict)
     return max_cut_dict, max_cut_value
-

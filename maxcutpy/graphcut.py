@@ -23,9 +23,9 @@ UNDECIDED = 0  # magenta
 MARKED = 2     # red
 
 
-#==============================================================================
+# ==============================================================================
 # Graph's partitions
-#==============================================================================
+# ==============================================================================
 
 
 def partition_dictionary(G):
@@ -86,9 +86,9 @@ def all_possible_cuts(G):
     return cuts_list
 
 
-#==============================================================================
+# ==============================================================================
 # Cut Indices
-#==============================================================================
+# ==============================================================================
 
 
 def are_undecided_nodes(G):
@@ -105,7 +105,7 @@ def edges_beetween(G, a, b):
     WARNING: a and b should have no element in common.
 
     """
-    return len(nx.edge_boundary(G, a, b))
+    return len(list(nx.edge_boundary(G, a, b)))
 
 
 def cut_edges(G, partition_dict=None):
@@ -132,9 +132,9 @@ def compute_epsilon(G):
     return round(1.0 - float(cut_edges(G)) / float(G.number_of_edges()), 3)
 
 
-#==============================================================================
+# ==============================================================================
 # Consistency Condition
-#==============================================================================
+# ==============================================================================
 
 
 def minority_class(G, partition_dict, node):
@@ -144,7 +144,7 @@ def minority_class(G, partition_dict, node):
     in order to maximize the cut.
 
     """
-    neighbors = G.neighbors(node)
+    neighbors = list(G.neighbors(node))
 
     blue_neighbors = 0
     black_neighbors = 0
@@ -168,7 +168,7 @@ def minority_class(G, partition_dict, node):
 
 def strong_minority_class(G, partition_dict, node):
     """Compute strong minority class of a node"""
-    neighbors = G.neighbors(node)
+    neighbors = list(G.neighbors(node))
 
     blue_neighbors = 0
     black_neighbors = 0
@@ -197,16 +197,16 @@ def is_cut_consistent(G, partition_dict, check_nodes=None):
         node_class = minority_class(G, partition_dict, i)
         if partition_dict[i] is not MARKED:
             if (node_class is not UNDECIDED and
-                partition_dict[i] is not UNDECIDED):
+                    partition_dict[i] is not UNDECIDED):
                 if node_class != partition_dict[i]:
                     return False
 
     return True
 
 
-#==============================================================================
+# ==============================================================================
 # Cut Methods
-#==============================================================================
+# ==============================================================================
 
 
 def init_cut(G, nbunch=None):
@@ -214,7 +214,7 @@ def init_cut(G, nbunch=None):
     if nbunch is None:
         nbunch = G.nodes()
 
-    nx.set_node_attributes(G, PARTITION, dict.fromkeys(nbunch, UNDECIDED))
+    nx.set_node_attributes(G, dict.fromkeys(nbunch, UNDECIDED), PARTITION)
 
 
 def integer_to_binary(i, n):
@@ -225,7 +225,7 @@ def integer_to_binary(i, n):
 
 def cut(G, partition_dict):
     """Use a partition dictionary to cut a graph"""
-    nx.set_node_attributes(G, PARTITION, partition_dict)
+    nx.set_node_attributes(G, partition_dict, PARTITION)
 
 
 def binary_cut(G, int_cut, bin_cut=None):
@@ -272,9 +272,9 @@ def marked_nodes_could_be_cut(G, partition_dict, marked_nodes):
             partition_dict[i] = node_class
 
 
-#==============================================================================
+# ==============================================================================
 # Marking Strategies Methods
-#==============================================================================
+# ==============================================================================
 
 
 def degree_nodes_sequence(G, nbunch=None, reverse=False):
@@ -283,8 +283,8 @@ def degree_nodes_sequence(G, nbunch=None, reverse=False):
 
     """
     degrees_dict = G.degree(nbunch)
-    return sorted(degrees_dict,
-                  key=lambda key: degrees_dict[key],
+    return sorted(dict(degrees_dict).keys(),
+                  key=lambda x: degrees_dict[x],
                   reverse=reverse)
 
 
@@ -315,9 +315,9 @@ def pick_random_nodes(G, n_nodes):
     return random.sample(G.nodes(), n_nodes)
 
 
-#==============================================================================
+# ==============================================================================
 # Others
-#==============================================================================
+# ==============================================================================
 
 
 def is_all_isolate(G):
@@ -355,4 +355,3 @@ def sign_norm(d):
     for i in d:
         sign_d[i] = np.sign(d[i])
     return sign_d
-

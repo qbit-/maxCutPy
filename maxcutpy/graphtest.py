@@ -10,8 +10,8 @@ from collections import defaultdict
 
 import networkx as nx
 
-import graphcut as gc
-import graphgen as gg
+from . import graphcut as gc
+from . import graphgen as gg
 
 
 __license__ = "GPL"
@@ -32,9 +32,9 @@ def execution_time_and_output(function, n_times=1, *args, **kwargs):
     return round(elapsed, 3), retval
 
 
-#==============================================================================
+# ==============================================================================
 # Tests
-#==============================================================================
+# ==============================================================================
 
 
 def test_cut_algorithm(cut_alg,
@@ -58,7 +58,7 @@ def test_cut_algorithm(cut_alg,
     keys = []
     total_time = 0.0
 
-    adj_matrix_dict = gg.read_from_file(benchmark_filename + '.dat', 
+    adj_matrix_dict = gg.read_from_file(benchmark_filename + '.dat',
                                         gg.BENCHMARKS_FILE_DIR)
 
     epsilons_dict = defaultdict(list)
@@ -84,7 +84,8 @@ def test_cut_algorithm(cut_alg,
 
         e = gc.compute_epsilon(G)
 
-        print(str(i) + '\t' + str(round(key, 3)) + '\t' + str(e) + '\t\t' + str(t))
+        print(str(i) + '\t' + str(round(key, 3)) +
+              '\t' + str(e) + '\t\t' + str(t))
 
         keys.append(key)
         times.append(t)
@@ -93,11 +94,12 @@ def test_cut_algorithm(cut_alg,
         i += 1
 
         epsilons_dict[e].append((nx.adj_matrix(G), gc.partition_dictionary(G)))
-        gg.write_to_file(epsilons_dict, 'graphs_' + benchmark_filename + '.dat')
+        gg.write_to_file(epsilons_dict, 'graphs_' +
+                         benchmark_filename + '.dat')
 
     gg.write_to_file((keys, times, epsilons),
-                      test_name + benchmark_filename + '.dat',
-                      cut_alg.__name__)
+                     test_name + benchmark_filename + '.dat',
+                     cut_alg.__name__)
 
     print('Total time:\t\t\t' + str(total_time))
     print('Success\n')
@@ -138,7 +140,9 @@ def compare_cut_algorithm_results(cut_alg, results_graphs, test_name=''):
 
             i += 1
 
-    gg.write_to_file(results_dict, test_name + 'results_' + results_graphs + '.dat', location)
+    gg.write_to_file(results_dict, test_name + 'results_' +
+                     results_graphs + '.dat', location)
 
     if len(error_list) != 0:
-        gg.write_to_file(error_list, test_name + 'errors_' + results_graphs + '.dat', location)
+        gg.write_to_file(error_list, test_name + 'errors_' +
+                         results_graphs + '.dat', location)

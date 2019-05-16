@@ -6,7 +6,7 @@ for testing.
 
 import os
 import math
-import cPickle as pkl
+import pickle as pkl
 from collections import defaultdict
 
 import networkx as nx
@@ -19,9 +19,9 @@ DEFAULT_FILE_LOCATION = os.path.abspath(os.curdir) + "/testing/"
 BENCHMARKS_FILE_DIR = 'benchmarks'
 
 
-#==============================================================================
+# ==============================================================================
 # File Management
-#==============================================================================
+# ==============================================================================
 
 
 def write_to_file(obj, filename, location=''):
@@ -95,7 +95,7 @@ def remove_unconnected_graphs(eps_dict):
     return filtered_eps_dict
 
 
-#==============================================================================
+# ==============================================================================
 # Benchmarks Building Methods
 #
 # WARNING: if a file already exists it will be automatically overwrited.
@@ -104,7 +104,7 @@ def remove_unconnected_graphs(eps_dict):
 # -----
 # In this project we treat only connected graphs. So, in these benchmark's
 # generation's methods if a graph is unconnected it will be ignored.
-#==============================================================================
+# ==============================================================================
 
 
 def generate_static_graphs(n_graphs, n_nodes, p_edges):
@@ -148,9 +148,9 @@ def generate_crescent_edges_graphs(n_graphs, n_nodes, p_edges, min_p_edges=None)
     p_edges = min_p_edges
 
     for i in range(0, n_graphs):
-    
+
         G = nx.erdos_renyi_graph(n_nodes, p_edges)
-    
+
         if nx.is_connected(G):
             adj_matrix_dict[p_edges] = nx.adj_matrix(G)
 
@@ -166,7 +166,8 @@ def generate_crescent_nodes_graphs(nodes_range, p_edges):
     with probability p.
 
     """
-    file_info = 'from_' + str(min(nodes_range)) + '_to_' + str(max(nodes_range))
+    file_info = 'from_' + str(min(nodes_range)) + \
+        '_to_' + str(max(nodes_range))
     file_info += 'N_' + str(p_edges) + 'P'
 
     adj_matrix_dict = defaultdict(list)
@@ -182,4 +183,3 @@ def generate_crescent_nodes_graphs(nodes_range, p_edges):
     write_to_file(adj_matrix_dict, filename + '.dat', BENCHMARKS_FILE_DIR)
 
     return filename
-

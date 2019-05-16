@@ -6,7 +6,7 @@ Graphic library with pretty drawing methods for graphs using matplotlib.
 import networkx as nx
 import matplotlib.pylab as plt
 
-import graphcut as gc
+from . import graphcut as gc
 
 
 __license__ = "GPL"
@@ -96,7 +96,7 @@ def draw_cut_graph(G,
                            node_color='blue')
 
     nx.draw_networkx_edges(G, pos,
-                           nx.edge_boundary(G, blue_nodes, blue_nodes),
+                           list(nx.edge_boundary(G, blue_nodes, blue_nodes)),
                            width=edge_width,
                            edge_color='blue')
 
@@ -108,7 +108,7 @@ def draw_cut_graph(G,
                            node_color='black')
 
     nx.draw_networkx_edges(G, pos,
-                           nx.edge_boundary(G, black_nodes, black_nodes),
+                           list(nx.edge_boundary(G, black_nodes, black_nodes)),
                            width=edge_width,
                            edge_color='black')
 
@@ -120,18 +120,18 @@ def draw_cut_graph(G,
                            node_color='magenta')
 
     nx.draw_networkx_edges(G, pos,
-                           nx.edge_boundary(G, undecided_nodes, undecided_nodes),
+                           list(nx.edge_boundary(G, undecided_nodes, undecided_nodes)),
                            width=edge_width,
                            edge_color='magenta')
 
     nx.draw_networkx_edges(G, pos,
-                           nx.edge_boundary(G, blue_nodes, undecided_nodes),
+                           list(nx.edge_boundary(G, blue_nodes, undecided_nodes)),
                            width=edge_width,
                            style='dotted',
                            edge_color='magenta')
 
     nx.draw_networkx_edges(G, pos,
-                           nx.edge_boundary(G, undecided_nodes, black_nodes),
+                           list(nx.edge_boundary(G, undecided_nodes, black_nodes)),
                            width=edge_width,
                            style='dotted',
                            edge_color='magenta')
@@ -144,31 +144,31 @@ def draw_cut_graph(G,
                            node_color='red')
 
     nx.draw_networkx_edges(G, pos,
-                           nx.edge_boundary(G, marked_nodes, marked_nodes),
+                           list(nx.edge_boundary(G, marked_nodes, marked_nodes)),
                            width=edge_width,
                            edge_color='red')
 
     #Draw edges beetween marked and unmarked
 
     nx.draw_networkx_edges(G, pos,
-                           nx.edge_boundary(G, marked_nodes, blue_nodes),
+                           list(nx.edge_boundary(G, marked_nodes, blue_nodes)),
                            width=edge_width,
                            edge_color='orange')
 
     nx.draw_networkx_edges(G, pos,
-                           nx.edge_boundary(G, marked_nodes, black_nodes),
+                           list(nx.edge_boundary(G, marked_nodes, black_nodes)),
                            width=edge_width,
                            edge_color='orange')
 
     nx.draw_networkx_edges(G, pos,
-                           nx.edge_boundary(G, marked_nodes, undecided_nodes),
+                           list(nx.edge_boundary(G, marked_nodes, undecided_nodes)),
                            width=edge_width,
                            edge_color='orange')
 
     # Draw cut edges
 
     nx.draw_networkx_edges(G, pos,
-                           nx.edge_boundary(G, blue_nodes, black_nodes),
+                           list(nx.edge_boundary(G, blue_nodes, black_nodes)),
                            width=edge_width,
                            style='dashed',
                            edge_color='gray')
